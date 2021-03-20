@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import Home from '../components/Home.vue'
+import CreateStory from '../components/CreateStory.vue'
 
 Vue.use(VueRouter)
 
@@ -10,6 +11,11 @@ Vue.use(VueRouter)
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/create-story',
+    name: 'CreateStory',
+    component: CreateStory
   },
 ]
 
