@@ -28,6 +28,14 @@ contract StoriesNFT is ERC721 {
         address payable authorAddress
     );
 
+    event StorySale (
+        uint storyId,
+        uint amount,
+        uint date,
+        address from,
+        address payable author
+    );
+
     constructor() ERC721("StoriesToken", "ST") public {}
 
     function createStory(string memory _title, string memory _authorName, string memory _preview, string memory _description, uint _price) public {
@@ -35,5 +43,18 @@ contract StoriesNFT is ERC721 {
 
         stories[storiesCount] = Story(storiesCount, _title, _authorName, _preview, _description, _price, now, msg.sender);
         emit StoryCreated(storiesCount, _title, _authorName, _preview, _description, _price, now, msg.sender);
+    }
+
+    function buyStory(uint _storyId) public payable {
+        Story memory _story = stories[_storyId];
+
+        _story.authorAddress.transfer(msg.value);
+
+        // Create NFT
+        uint _tokenId = totalSupply().add(1);
+        _safeMint(msg.sender, _tokenId);
+        _setTokenURI(_tokenId, _story.description);
+
+        emit StorySale(_storyId, msg.value, now, msg.sender, _story.authorAddress);
     }
 }

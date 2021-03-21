@@ -8,9 +8,9 @@
         </div>
         <p class="text-muted">By {{data.authorName}}</p>
 
-        <p class="text-muted">By {{data.preview}}</p>
+        <p class="text-muted">{{data.preview}}</p>
 
-        <button class="btn btn-primary primary-bg-color">
+        <button class="btn btn-primary primary-bg-color" @click="buyStory()">
           Buy for {{weiToETH}} ETH
         </button>
       </div>
@@ -27,9 +27,16 @@ export default {
     data: {},
   }),
   computed: {
-    ...mapGetters(['storiesList', 'storiesBlockchain']),
+    ...mapGetters(['walletAddress', 'storiesList', 'storiesBlockchain']),
     weiToETH() {
       return window.web3.utils.fromWei(this.data.price, 'Ether');
+    }
+  },
+  methods: {
+    async buyStory(){
+      await this.storiesBlockchain.methods
+        .buyStory(this.$route.params.id)
+        .send({ from: this.walletAddress, value: this.data.price });
     }
   },
   async mounted(){
