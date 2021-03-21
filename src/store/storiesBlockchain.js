@@ -5,13 +5,15 @@ import StoriesNFT from '../abis/StoriesNFT.json';
 const state = {
     walletAddress: '',
     storiesBlockchain: null,
-    storiesCount: 0
+    storiesCount: 0,
+    storiesList: []
 };
 
 const getters = {
     walletAddress: state => state.walletAddress,
     storiesBlockchain: state => state.storiesBlockchain,
-    storiesCount: state => state.storiesCount
+    storiesCount: state => state.storiesCount,
+    storiesList: state => state.storiesList
 };
 
 const actions = {
@@ -44,6 +46,13 @@ const actions = {
 
             const storiesCount = await blockchain.methods.storiesCount().call();
             commit('setStoriesCount', storiesCount);
+
+            let tempStories = []
+            for(let i = 0; i < storiesCount; i++){
+                const story = await blockchain.methods.stories(i + 1).call();
+                tempStories.push(story);
+            }
+            commit('setStoriesList', tempStories);
         } else {
             window.alert('Contract is not deployed to detected network.')
         }
@@ -53,7 +62,8 @@ const actions = {
 const mutations = {
     setWalletAddress: (state, walletAddress) => (state.walletAddress = walletAddress),
     setStoriesBlockchain: (state, storiesBlockchain) => (state.storiesBlockchain = storiesBlockchain),
-    setStoriesCount: (state, storiesCount) => (state.storiesCount = storiesCount)
+    setStoriesCount: (state, storiesCount) => (state.storiesCount = storiesCount),
+    setStoriesList: (state, storiesList) => (state.storiesList = storiesList)
 };
 
 export default {

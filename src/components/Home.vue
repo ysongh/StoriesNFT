@@ -1,9 +1,26 @@
 <template>
-  <div>
-    <h1>Stories NFT</h1>
-    <p>{{walletAddress}}</p>
-    <p>{{storiesCount}} Stories</p>
-    <router-link class="btn btn-primary primary-bg-color" to="/create-story">Create Story</router-link>
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>List of Stories</h1>
+      <router-link class="btn btn-primary primary-bg-color" to="/create-story">Create Story</router-link>
+    </div>
+    
+    <p class="mb-5">Your wallet address: {{walletAddress}}</p>
+    
+    <div class="row">
+      <div class="col-sm-12 col-lg-6" v-bind:key="story.storyId" v-for="story of storiesList">
+        <div class="card mb-3">
+          <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+              <p class="m-0"><strong class="story__text">{{story.title}}</strong> by {{story.authorName}}</p>
+              <p class="text-muted m-0">{{story.preview}}</p>
+            </div>
+            <button class="btn btn-primary primary-bg-color">View</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
   </div>
   
 </template>
@@ -14,19 +31,15 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'Home',
   methods: mapActions(['connectToBlockchain']),
-  computed: mapGetters(['walletAddress', 'storiesBlockchain', 'storiesCount']),
+  computed: mapGetters(['walletAddress', 'storiesBlockchain', 'storiesCount', 'storiesList']),
   async mounted(){
     await this.connectToBlockchain();
-    console.log(this.storiesBlockchain);
-
-    for(let i = 0; i < this.storiesCount; i++){
-      const story = await this.storiesBlockchain.methods.stories(i + 1).call();
-      console.log(story);
-    }
   }
 }
 </script>
 
-<style>
-
+<style scoped>
+  .story__text {
+    font-size: 1.4rem;
+  }
 </style>
