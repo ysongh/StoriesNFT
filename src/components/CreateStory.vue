@@ -45,7 +45,7 @@
           <label class="font-weight-bold">Price</label>
           <input
             class="form-control"
-            type="number"
+            type="text"
             name="price"
             v-model="price">
         </div>

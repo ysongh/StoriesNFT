@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import Home from '../components/Home.vue'
 import CreateStory from '../components/CreateStory.vue'
+import Story from '../components/Story.vue'
 
 Vue.use(VueRouter)
 
@@ -17,6 +18,11 @@ Vue.use(VueRouter)
     name: 'CreateStory',
     component: CreateStory
   },
+  {
+    path: '/story/:id',
+    name: 'Story',
+    component: Story
+  }
 ]
 
 const router = new VueRouter({

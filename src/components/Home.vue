@@ -15,7 +15,9 @@
               <p class="m-0"><strong class="story__text">{{story.title}}</strong> by {{story.authorName}}</p>
               <p class="text-muted m-0">{{story.preview}}</p>
             </div>
-            <button class="btn btn-primary primary-bg-color">View</button>
+            <router-link class="btn btn-primary primary-bg-color" :to="{ path: '/story/'+ story.storyId}">
+              View
+            </router-link>
           </div>
         </div>
       </div>
