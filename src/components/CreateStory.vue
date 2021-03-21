@@ -32,6 +32,16 @@
         </div>
 
         <div class="form-group">
+          <label class="font-weight-bold">PDF of the Story</label>
+          <div class="input-group">
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" @change="getFile">
+              <label class="custom-file-label">{{fileName}}</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label class="font-weight-bold">Price</label>
           <input
             class="form-control"
@@ -57,6 +67,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import  axios from "axios";
+
+import { pinataApiKey, pinataSecretApiKey } from '../config';
 
 export default {
   name: 'CreateStory',
@@ -64,20 +77,41 @@ export default {
     title: "",
     authorName: "",
     preview: "",
-    description: "Test",
+    description: "",
     price: "",
-    address: ""
+    address: "",
+    file: null,
+    fileName: ''
   }),
   computed: mapGetters(['walletAddress', 'storiesBlockchain']),
   methods:{
     async addStory(e){
       e.preventDefault();
 
+      let data = new FormData();
+      data.append('file', this.file);
+
+      const res = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", data, {
+        maxContentLength: "Infinity",
+        headers: {
+          "Content-Type": 'multipart/form-data',
+          pinata_api_key: pinataApiKey, 
+          pinata_secret_api_key: pinataSecretApiKey,
+        }
+      })
+
+      this.description = res.data.IpfsHash;
+
       await this.storiesBlockchain.methods
         .createStory(this.title, this.authorName, this.preview, this.description, window.web3.utils.toWei(this.price.toString(), 'Ether'))
         .send({ from: this.address });
 
       this.$router.push('/');
+    },
+    getFile(event){
+      const file = event.target.files[0];
+      this.file = file;
+      this.fileName = file.name;
     }
   },
   mounted(){

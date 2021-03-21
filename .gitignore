@@ -24,3 +24,4 @@ pnpm-debug.log*
 
 package-lock.json
 abis
+config.js
