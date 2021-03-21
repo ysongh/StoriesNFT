@@ -10,9 +10,12 @@
 
         <p class="text-muted">{{data.preview}}</p>
 
-        <button class="btn btn-primary primary-bg-color" @click="buyStory()">
+        <button v-if="!isPurchase" class="btn btn-primary primary-bg-color" @click="buyStory()">
           Buy for {{weiToETH}} ETH
         </button>
+        <a v-else v-bind:href="'https://gateway.pinata.cloud/ipfs/'+ data.description" target="_blank" rel="noopener noreferrer">
+          Link to the Story
+        </a>
       </div>
     </div>
   </div>
@@ -25,6 +28,7 @@ export default {
   name: 'Story',
   data: () => ({
     data: {},
+    isPurchase: false
   }),
   computed: {
     ...mapGetters(['walletAddress', 'storiesList', 'storiesBlockchain']),
@@ -34,9 +38,16 @@ export default {
   },
   methods: {
     async buyStory(){
-      await this.storiesBlockchain.methods
-        .buyStory(this.$route.params.id)
-        .send({ from: this.walletAddress, value: this.data.price });
+      try{
+        await this.storiesBlockchain.methods
+          .buyStory(this.$route.params.id)
+          .send({ from: this.walletAddress, value: this.data.price });
+
+        this.isPurchase = true;
+      }
+      catch(err){
+        console.error(err);
+      }
     }
   },
   async mounted(){
