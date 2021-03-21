@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import Home from '../components/Home.vue'
 import CreateStory from '../components/CreateStory.vue'
 import Story from '../components/Story.vue'
+import Tokens from '../components/Tokens.vue'
 
 Vue.use(VueRouter)
 
@@ -17,6 +18,11 @@ Vue.use(VueRouter)
     path: '/create-story',
     name: 'CreateStory',
     component: CreateStory
+  },
+  {
+    path: '/tokens',
+    name: 'Tokens',
+    component: Tokens
   },
   {
     path: '/story/:id',

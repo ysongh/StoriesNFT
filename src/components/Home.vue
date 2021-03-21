@@ -36,8 +36,6 @@ export default {
   computed: mapGetters(['walletAddress', 'storiesBlockchain', 'storiesCount', 'storiesList']),
   async mounted(){
     await this.connectToBlockchain();
-    const NFT = await this.storiesBlockchain.methods.totalSupply().call();
-    console.log(NFT);
   }
 }
 </script>
