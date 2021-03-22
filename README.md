@@ -1,4 +1,21 @@
 # Stories NFT
+A dapp that allows reader to buy stories in NFT
+
+- Live Site - https://storiesnft.netlify.app/
+- Demo - https://youtu.be/JztSPxSx2M8
+
+## Features
+- Writers can create their story
+- Files are store on Pinata
+- User can buy the story and earn NFT which contains a link to the full content of the story
+
+## Technologies
+- Vue 2
+- Vuex 3
+- Bootstrap 4
+- Solidity
+- Openzeppelin/contracts ERC721.sol
+- Pinata
 
 ## Project setup
 ```
