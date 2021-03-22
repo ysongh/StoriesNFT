@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-4">
+  <div class="home container mt-4">
     <div class="d-flex justify-content-between align-items-center">
       <h1>List of Stories</h1>
       <router-link class="btn btn-primary secondary-bg-color" to="/create-story">Create Story</router-link>
@@ -12,7 +12,7 @@
         <div class="card mb-3">
           <div class="card-body d-flex justify-content-between align-items-center">
             <div>
-              <p class="m-0"><strong class="story__text">{{story.title}}</strong> by {{story.authorName}}</p>
+              <p class="m-0"><strong class="home__text">{{story.title}}</strong> by {{story.authorName}}</p>
               <p class="text-muted m-0">{{story.preview}}</p>
             </div>
             <router-link class="btn btn-primary primary-bg-color" :to="{ path: '/story/'+ story.storyId}">
@@ -41,7 +41,11 @@ export default {
 </script>
 
 <style scoped>
-  .story__text {
+  .home{
+    min-height: 70vh;
+  }
+
+  .home__text {
     font-size: 1.4rem;
   }
 </style>

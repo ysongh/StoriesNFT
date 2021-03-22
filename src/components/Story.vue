@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-4">
+  <div class="story container mt-4">
     <div class="card mb-3">
       <div class="card-body">
         <div class="d-flex">
@@ -59,5 +59,9 @@ export default {
 <style scoped>
   h2 {
     flex: 1 !important;
+  }
+
+  .story{
+    min-height: 70vh;
   }
 </style>

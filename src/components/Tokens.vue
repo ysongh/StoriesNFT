@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-4">
+  <div class="tokens container mt-4">
     <h1 class="mb-4">List of NFT</h1>
 
     <div class="row">
@@ -48,5 +48,9 @@ export default {
 <style scoped>
   h2 {
     flex: 1 !important;
+  }
+
+  .tokens {
+    min-height: 70vh;
   }
 </style>
