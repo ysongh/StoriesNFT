@@ -2,12 +2,12 @@
   <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center">
       <h1>List of Stories</h1>
-      <router-link class="btn btn-primary primary-bg-color" to="/create-story">Create Story</router-link>
+      <router-link class="btn btn-primary secondary-bg-color" to="/create-story">Create Story</router-link>
     </div>
     
-    <p class="mb-5">Your wallet address: {{walletAddress}}</p>
-    
-    <div class="row">
+    <a v-bind:href="'https://kovan.etherscan.io/address/'+ walletAddress" target="_blank" rel="noopener noreferrer">Your wallet address: {{walletAddress}}</a>
+
+    <div class="row mt-4">
       <div class="col-sm-12 col-lg-6" v-bind:key="story.storyId" v-for="story of storiesList">
         <div class="card mb-3">
           <div class="card-body d-flex justify-content-between align-items-center">
