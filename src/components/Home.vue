@@ -22,20 +22,80 @@
         </div>
       </div>
     </div>
-    
+
+    <p>{{userToken}}</p>
+    <img :src="url" alt="image" />
+    <p>{{url}}</p>
   </div>
-  
+   
 </template>
 
 <script>
+import { Users, UserStorage, AddItemsResultSummary } from '@spacehq/sdk';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'Home',
-  methods: mapActions(['connectToBlockchain']),
+  data: () => ({
+    userToken: "",
+    url: ""
+  }),
+  methods:
+  mapActions(['connectToBlockchain']),
   computed: mapGetters(['walletAddress', 'storiesBlockchain', 'storiesCount', 'storiesList']),
   async mounted(){
-    await this.connectToBlockchain();
+    //await this.connectToBlockchain();
+
+    const users = new Users({ endpoint: 'wss://auth.space.storage' });
+    console.log(users, "users")
+    // createIdentity generate a random keypair identity
+    const identity = await users.createIdentity();
+
+    const spaceUser = await users.authenticate(identity)
+    console.log(spaceUser, "spaceUser")
+    this.userToken = spaceUser.token;
+
+    const storage = new UserStorage(spaceUser);
+    console.log(storage, "storage")
+
+    await storage.createFolder({ bucket: 'personal', path: '/hello' });
+    let result = await storage.listDirectory({ bucket: 'personal', path: '/' });
+    console.log(result, "result")
+
+    const uploadResponse = await storage.addItems({
+      bucket: 'personal',
+      files: [
+        {
+          path: '/logo',
+          data: '',
+          mimeType: 'image/png'
+        }
+      ],
+    });
+
+    console.log(uploadResponse, "uploadResponse")
+    
+    uploadResponse.once('done', async (AddItemsEventData) => {
+      const summary = AddItemsResultSummary;
+      console.log(summary, "summary", AddItemsEventData);
+
+       result = await storage.listDirectory({ bucket: 'personal', path: '/' });
+       console.log(result, "result")
+
+      const response = await storage.openFile({ bucket: 'personal', path: '/logo' });
+      // response.stream is an async iterable
+      for await (const chunk of response.stream) {
+        // aggregate the chunks based on your logic
+        console.log(chunk, "chunk")
+      }
+
+      // response also contains a convenience function consumeStream
+      const fileBytes = await response.consumeStream();
+      console.log(fileBytes, "fileBytes")
+      const fileUrl = URL.createObjectURL(new Blob([fileBytes.buffer], { type: response.mimeType }));
+      console.log(fileUrl, "fileUrl")
+      this.url = fileUrl;
+    });
   }
 }
 </script>
