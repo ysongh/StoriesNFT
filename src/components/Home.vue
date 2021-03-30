@@ -26,6 +26,16 @@
     <p>{{userToken}}</p>
     <img :src="url" alt="image" />
     <p>{{url}}</p>
+
+    <p>Login to</p>
+    <div v-bind:key="n" v-for="n in usersLen">
+      <button @click="login(n)">Account #{{n}}</button>
+    </div>
+
+    <p class="mt-3">Your files</p>
+    <div v-bind:key="file.created" v-for="file of files">
+      <p>{{file.name}}</p>
+    </div>
   </div>
    
 </template>
@@ -42,8 +52,46 @@ export default {
     url: "",
     spaceStorage: null,
     spaceUser: null,
+    usersLen: 0,
+    userList: [],
+    files: []
   }),
-  methods: mapActions(['connectToBlockchain']),
+  methods: {
+    ...mapActions(['connectToBlockchain']),
+    async login(num){
+      const storage = new BrowserStorage();
+      this.browserStorage = storage;
+
+      const onErrorCallback = (err, identity) => {
+        console.log("ERROR: Identity failed to auth using Space SDK: ", err.toString())
+        console.log(identity)
+      }
+
+      const users = await Users.withStorage(storage, {endpoint: "wss://auth.space.storage"}, onErrorCallback);
+      console.log("Initialized users object using browser storage")
+      console.log("users: ", users)
+      console.log("users.list(): ", users.list())
+      this.userList = users.list();
+      this.usersLen = users.list().length;
+
+      let userList = await storage.list()
+      console.log("storage.list(): ", await storage.list());
+
+      console.log(userList, "fds")
+      
+      const spaceUser = await users.authenticate(userList[num - 1]);
+      console.log(spaceUser, "spaceUser")
+
+      const spaceStorage = new UserStorage(spaceUser);
+      console.log(spaceStorage, "spaceStorage")
+
+      //await spaceStorage.createFolder({ bucket: 'personal', path: '/test' });
+      let result = await spaceStorage.listDirectory({ bucket: 'personal', path: '/' });
+      console.log(result.items, "result")
+
+      this.files = result.items;
+    }
+  },
   computed: mapGetters(['walletAddress', 'storiesBlockchain', 'storiesCount', 'storiesList']),
   async mounted(){
     //await this.connectToBlockchain();
@@ -57,41 +105,8 @@ export default {
     }
 
     const users = await Users.withStorage(storage, {endpoint: "wss://auth.space.storage"}, onErrorCallback);
-    console.log("Initialized users object using browser storage")
-    console.log("users: ", users)
-    console.log("users.list(): ", users.list())
-
-    let userList = await storage.list()
-    // let userList = users.list()
-    console.log("storage.list(): ", await storage.list());
-
-    console.log(userList, "fds")
-
-    if(userList.length === 0) {
-      console.log("No identities found")
-      const identity = await users.createIdentity()
-      console.log("Created identity", identity)
-    }
-    else{
-      console.log("Identities found", userList)
-    }
-
-    userList = await storage.list()
-    
-    const t = JSON.parse(JSON.stringify(userList));
-    console.log("userList: ", t);
-
-    //userList = await storage.remove(userList[1].public)
-
-    const spaceUser = await users.authenticate(userList[0])
-    console.log(spaceUser, "spaceUser")
-
-    const spaceStorage = new UserStorage(spaceUser);
-    console.log(spaceStorage, "spaceStorage")
-
-    //await spaceStorage.createFolder({ bucket: 'personal', path: '/test' });
-    let result = await spaceStorage.listDirectory({ bucket: 'personal', path: '/' });
-    console.log(result, "result")
+    this.userList = users.list();
+    this.usersLen = users.list().length;
 
     // const storage = new UserStorage(spaceUser);
     // this.spaceStorage = storage;
