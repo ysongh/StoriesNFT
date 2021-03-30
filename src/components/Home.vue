@@ -31,71 +31,110 @@
 </template>
 
 <script>
-import { Users, UserStorage, AddItemsResultSummary } from '@spacehq/sdk';
+import { Users, BrowserStorage } from '@spacehq/users';
+import { UserStorage } from "@spacehq/storage";
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'Home',
   data: () => ({
     userToken: "",
-    url: ""
+    url: "",
+    spaceStorage: null,
+    spaceUser: null,
   }),
-  methods:
-  mapActions(['connectToBlockchain']),
+  methods: mapActions(['connectToBlockchain']),
   computed: mapGetters(['walletAddress', 'storiesBlockchain', 'storiesCount', 'storiesList']),
   async mounted(){
     //await this.connectToBlockchain();
 
-    const users = new Users({ endpoint: 'wss://auth.space.storage' });
-    console.log(users, "users")
-    // createIdentity generate a random keypair identity
-    const identity = await users.createIdentity();
+    const storage = new BrowserStorage();
+    this.browserStorage = storage;
 
-    const spaceUser = await users.authenticate(identity)
+    const onErrorCallback = (err, identity) => {
+      console.log("ERROR: Identity failed to auth using Space SDK: ", err.toString())
+      console.log(identity)
+    }
+
+    const users = await Users.withStorage(storage, {endpoint: "wss://auth.space.storage"}, onErrorCallback);
+    console.log("Initialized users object using browser storage")
+    console.log("users: ", users)
+    console.log("users.list(): ", users.list())
+
+    let userList = await storage.list()
+    // let userList = users.list()
+    console.log("storage.list(): ", await storage.list());
+
+    console.log(userList, "fds")
+
+    if(userList.length === 0) {
+      console.log("No identities found")
+      const identity = await users.createIdentity()
+      console.log("Created identity", identity)
+    }
+    else{
+      console.log("Identities found", userList)
+    }
+
+    userList = await storage.list()
+    
+    const t = JSON.parse(JSON.stringify(userList));
+    console.log("userList: ", t);
+
+    //userList = await storage.remove(userList[1].public)
+
+    const spaceUser = await users.authenticate(userList[0])
     console.log(spaceUser, "spaceUser")
-    this.userToken = spaceUser.token;
 
-    const storage = new UserStorage(spaceUser);
-    console.log(storage, "storage")
+    const spaceStorage = new UserStorage(spaceUser);
+    console.log(spaceStorage, "spaceStorage")
 
-    await storage.createFolder({ bucket: 'personal', path: '/hello' });
-    let result = await storage.listDirectory({ bucket: 'personal', path: '/' });
+    //await spaceStorage.createFolder({ bucket: 'personal', path: '/test' });
+    let result = await spaceStorage.listDirectory({ bucket: 'personal', path: '/' });
     console.log(result, "result")
 
-    const uploadResponse = await storage.addItems({
-      bucket: 'personal',
-      files: [
-        {
-          path: '/logo',
-          data: '',
-          mimeType: 'image/png'
-        }
-      ],
-    });
+    // const storage = new UserStorage(spaceUser);
+    // this.spaceStorage = storage;
+    // console.log(storage, "storage")
 
-    console.log(uploadResponse, "uploadResponse")
+    // await storage.createFolder({ bucket: 'personal', path: '/hello' });
+    // let result = await storage.listDirectory({ bucket: 'personal', path: '/' });
+    // console.log(result, "result")
+
+    // const uploadResponse = await storage.addItems({
+    //   bucket: 'personal',
+    //   files: [
+    //     {
+    //       path: '/logo',
+    //       data: '',
+    //       mimeType: 'image/png'
+    //     }
+    //   ],
+    // });
+
+    // console.log(uploadResponse, "uploadResponse")
     
-    uploadResponse.once('done', async (AddItemsEventData) => {
-      const summary = AddItemsResultSummary;
-      console.log(summary, "summary", AddItemsEventData);
+    // uploadResponse.once('done', async (AddItemsEventData) => {
+    //   const summary = AddItemsResultSummary;
+    //   console.log(summary, "summary", AddItemsEventData);
 
-       result = await storage.listDirectory({ bucket: 'personal', path: '/' });
-       console.log(result, "result")
+    //    result = await storage.listDirectory({ bucket: 'personal', path: '/' });
+    //    console.log(result, "result")
 
-      const response = await storage.openFile({ bucket: 'personal', path: '/logo' });
-      // response.stream is an async iterable
-      for await (const chunk of response.stream) {
-        // aggregate the chunks based on your logic
-        console.log(chunk, "chunk")
-      }
+    //   const response = await storage.openFile({ bucket: 'personal', path: '/logo' });
+    //   // response.stream is an async iterable
+    //   for await (const chunk of response.stream) {
+    //     // aggregate the chunks based on your logic
+    //     console.log(chunk, "chunk")
+    //   }
 
-      // response also contains a convenience function consumeStream
-      const fileBytes = await response.consumeStream();
-      console.log(fileBytes, "fileBytes")
-      const fileUrl = URL.createObjectURL(new Blob([fileBytes.buffer], { type: response.mimeType }));
-      console.log(fileUrl, "fileUrl")
-      this.url = fileUrl;
-    });
+    //   // response also contains a convenience function consumeStream
+    //   const fileBytes = await response.consumeStream();
+    //   console.log(fileBytes, "fileBytes")
+    //   const fileUrl = URL.createObjectURL(new Blob([fileBytes.buffer], { type: response.mimeType }));
+    //   console.log(fileUrl, "fileUrl")
+    //   this.url = fileUrl;
+    // });
   }
 }
 </script>
