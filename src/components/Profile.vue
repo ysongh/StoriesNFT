@@ -47,7 +47,7 @@
               <button class="btn btn-primary primary-bg-color w-50" @click="openFile(file.name)" :disabled="openFileLoading">
                 Open
               </button>
-              <button class="btn btn-primary secondary-bg-color w-50">
+              <button class="btn btn-primary secondary-bg-color w-50" @click="openModal(file.name)" data-toggle="modal" data-target="#publishStoryModal">
                 Publish
               </button>
             </div>
@@ -61,6 +61,7 @@
       </div>
     </center>
 
+    <PublishStory></PublishStory>
   </div>
    
 </template>
@@ -68,9 +69,17 @@
 <script>
 import { Users, BrowserStorage } from '@spacehq/users';
 import { UserStorage } from "@spacehq/storage";
+import { mapActions } from 'vuex';
+// import fleekStorage from '@fleekhq/fleek-storage-js'
+
+// import { fleekAPIKey, fleekAPISecret } from '../config';
+import PublishStory from './PublishStory';
 
 export default {
   name: 'Profile',
+  components: {
+    PublishStory
+  },
   data: () => ({
     userToken: "",
     url: "",
@@ -85,6 +94,7 @@ export default {
     openFileLoading: false
   }),
   methods: {
+    ...mapActions(['setCurrentFile', 'setCurrentFilename']),
     async login(num){
       try{
         this.fileLoading = true;
@@ -174,6 +184,15 @@ export default {
           "toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=500,height=600"
         );
         this.openFileLoading = false;
+
+        // const uploadedFile = await fleekStorage.upload({
+        //     apiKey: fleekAPIKey,
+        //     apiSecret: fleekAPISecret,
+        //     key: path,
+        //     data: newdata
+        // });
+
+        // console.log(uploadedFile)
       }
       catch(err) {
         console.error(err);
@@ -208,6 +227,21 @@ export default {
       console.log(result.items, "result")
 
       this.files = result.items;
+    },
+    async openModal(path){
+      this.setCurrentFilename(path);
+      const spaceStorage = new UserStorage(this.spaceUser);
+      const response = await spaceStorage.openFile({ bucket: 'personal', path: `/${path}` });
+      
+      // response.stream is an async iterable
+      let newdata = null;
+      for await (const chunk of response.stream) {
+        // aggregate the chunks based on your logic
+        console.log(chunk, "chunk")
+        if(!newdata) newdata = chunk;
+      }
+      console.log(newdata, path, "sa")
+      this.setCurrentFile(newdata);
     }
   },
   async mounted(){

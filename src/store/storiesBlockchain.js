@@ -6,14 +6,18 @@ const state = {
     walletAddress: '',
     storiesBlockchain: null,
     storiesCount: 0,
-    storiesList: []
+    storiesList: [],
+    file: null,
+    filename: ''
 };
 
 const getters = {
     walletAddress: state => state.walletAddress,
     storiesBlockchain: state => state.storiesBlockchain,
     storiesCount: state => state.storiesCount,
-    storiesList: state => state.storiesList
+    storiesList: state => state.storiesList,
+    file: state => state.file,
+    filename: state => state.filename
 };
 
 const actions = {
@@ -56,14 +60,22 @@ const actions = {
         } else {
             window.alert('Contract is not deployed to detected network.')
         }
-    }
+    },
+    setCurrentFile({ commit }, file){
+        commit('setFile', file);
+    },
+    setCurrentFilename({ commit }, filename){
+        commit('setFilename', filename);
+    },
 };
 
 const mutations = {
     setWalletAddress: (state, walletAddress) => (state.walletAddress = walletAddress),
     setStoriesBlockchain: (state, storiesBlockchain) => (state.storiesBlockchain = storiesBlockchain),
     setStoriesCount: (state, storiesCount) => (state.storiesCount = storiesCount),
-    setStoriesList: (state, storiesList) => (state.storiesList = storiesList)
+    setStoriesList: (state, storiesList) => (state.storiesList = storiesList),
+    setFile: (state, file) => (state.file = file),
+    setFilename: (state, filename) => (state.filename = filename)
 };
 
 export default {
