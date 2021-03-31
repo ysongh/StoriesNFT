@@ -1,12 +1,15 @@
 <template>
-  <div class="home container mt-4">
+  <div class="profile container mt-4">
     <div class="d-flex justify-content-between align-items-center">
       <h1>Profile</h1>
+      <label class="btn btn-outline-success btn-sm">
+        <p class="mt-2">Upload File</p>
+        <input
+          class="profile__file"
+          type="file"
+          @change="uploadFile">
+      </label>
     </div>
-
-    <p>Username: {{username}}</p>
-    <img :src="url" alt="image" />
-    <p>{{url}}</p>
 
     <p>Login to</p>
     <div v-bind:key="n" v-for="n in usersLen">
@@ -14,16 +17,24 @@
     </div>
 
     <p class="mt-3">Your files</p>
-    <div v-bind:key="file.name" v-for="file of files">
-      <p @click="getFile()">{{file.name}}</p>
+    <div >
+      
     </div>
 
-    <div class="form-group">
-      <label class="font-weight-bold">Upload File</label>
-      <div class="input-group">
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" @change="uploadFile">
-          <label class="custom-file-label"></label>
+    <div class="row mt-4">
+      <div class="col-sm-6 col-md-4 col-lg-3" v-bind:key="file.name" v-for="file of files">
+        <div class="card mb-3">
+          <div class="card-body">
+            <p>{{file.name}}</p>
+            <div class="d-flex">
+              <button class="btn btn-primary primary-bg-color w-50" @click="openFile(file.name)">
+                Open
+              </button>
+              <button class="btn btn-primary secondary-bg-color w-50">
+                Publish
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -100,6 +111,12 @@ export default {
       let result = await spaceStorage.listDirectory({ bucket: 'personal', path: '/' });
       console.log(result.items, "new folder");
       this.files = result.items;
+    },
+    openFile(filename){
+      window.open("https://storageapi.fleek.co/ysongh-team-bucket/" + filename,
+        "_blank",
+        "toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=500,height=600"
+      );
     }
   },
   async mounted(){
@@ -119,5 +136,13 @@ export default {
 </script>
 
 <style scoped>
+  .profile{
+    min-height: 70vh;
+  }
 
+  .profile__file{
+    opacity: 0;
+    position: absolute;
+    left: -9999px
+  }
 </style>
