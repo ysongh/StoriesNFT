@@ -16,6 +16,8 @@
       <button @click="login(n)">Account #{{n}}</button>
     </div>
 
+    <button @click="createIdentity()">Create New Identity</button>
+
     <p class="mt-3">Your files</p>
     <div >
       
@@ -59,27 +61,24 @@ export default {
     usersLen: 0,
     userList: [],
     files: [],
-    username: ''
+    browserStorage: null
   }),
   methods: {
     async login(num){
-      const storage = new BrowserStorage();
-      this.browserStorage = storage;
-
       const onErrorCallback = (err, identity) => {
         console.log("ERROR: Identity failed to auth using Space SDK: ", err.toString())
         console.log(identity)
       }
 
-      const users = await Users.withStorage(storage, {endpoint: "wss://auth.space.storage"}, onErrorCallback);
+      const users = await Users.withStorage(this.browserStorage, {endpoint: "wss://auth.space.storage"}, onErrorCallback);
       console.log("Initialized users object using browser storage")
       console.log("users: ", users)
       console.log("users.list(): ", users.list())
       this.userList = users.list();
       this.usersLen = users.list().length;
 
-      let userList = await storage.list()
-      console.log("storage.list(): ", await storage.list());
+      let userList = await this.browserStorage.list()
+      console.log("storage.list(): ", await this.browserStorage.list());
       this.userList = userList;
       
       const spaceUser = await users.authenticate(userList[num - 1]);
@@ -87,7 +86,6 @@ export default {
       console.log(spaceUser, "spaceUser")
 
       const spaceStorage = new UserStorage(spaceUser);
-      //this.username = spaceStorage.userMetadataStore.username;
       console.log(spaceStorage, "spaceStorage")
 
       //await spaceStorage.createFolder({ bucket: 'personal', path: '/test' });
@@ -117,6 +115,35 @@ export default {
         "_blank",
         "toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=500,height=600"
       );
+    },
+    async createIdentity(){
+      const onErrorCallback = (err, identity) => {
+        console.log("ERROR: Identity failed to auth using Space SDK: ", err.toString())
+        console.log(identity)
+      }
+
+      const users = await Users.withStorage(this.browserStorage, {endpoint: "wss://auth.space.storage"}, onErrorCallback);
+      this.userList = users.list();
+      this.usersLen = users.list().length;
+
+      const userData = await users.createIdentity();
+      console.log(userData, "userData");
+
+      let userList = await this.browserStorage.list();
+      this.userList = userList;
+      
+      const spaceUser = await users.authenticate(userData);
+      this.spaceUser = spaceUser;
+      console.log(spaceUser, "spaceUser")
+
+      const spaceStorage = new UserStorage(spaceUser);
+      console.log(spaceStorage, "spaceStorage")
+
+      //await spaceStorage.createFolder({ bucket: 'personal', path: '/test' });
+      let result = await spaceStorage.listDirectory({ bucket: 'personal', path: '/' });
+      console.log(result.items, "result")
+
+      this.files = result.items;
     }
   },
   async mounted(){
@@ -131,6 +158,8 @@ export default {
     const users = await Users.withStorage(storage, {endpoint: "wss://auth.space.storage"}, onErrorCallback);
     this.userList = users.list();
     this.usersLen = users.list().length;
+
+    console.log("Loading Complete")
   }
 }
 </script>
