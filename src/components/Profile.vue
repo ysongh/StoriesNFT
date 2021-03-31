@@ -11,12 +11,20 @@
       </label>
     </div>
 
-    <p>Login to</p>
-    <div v-bind:key="n" v-for="n in usersLen">
-      <button @click="login(n)">Account #{{n}}</button>
+    <div class="d-flex align-items-center">
+      <button class="btn btn-primary" @click="createIdentity()">Create New Identity</button>
+      <p class="mt-3 ml-2">Or Login to</p>
     </div>
-
-    <button @click="createIdentity()">Create New Identity</button>
+    
+    <div class="d-flex">
+      <div v-bind:key="n" v-for="n in usersLen">
+        <div class="card">
+          <button class="btn" @click="login(n)">
+            Account #{{n}}
+          </button>
+        </div>
+      </div>
+    </div>
 
     <p class="mt-3">Your files</p>
     <div >
