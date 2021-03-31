@@ -9,6 +9,10 @@
           </button>
         </div>
         <div class="modal-body">
+          <div v-if="isPublish" class="alert alert-success" role="alert">
+            Your Story has been publish!
+          </div>
+
           <form class="card-body px-5" @submit="addStory">
             <div class="form-group">
               <label class="font-weight-bold">Title</label>
@@ -60,7 +64,13 @@
                 v-model="address">
             </div>
 
-            <input type="submit" value="Add" class="btn btn-primary primary-bg-color btn-block btn-lg">
+            <input v-if="!loading" type="submit" value="Add" class="btn btn-primary primary-bg-color btn-block btn-lg">
+            
+            <center v-else>
+              <div class="spinner-grow text-dark" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </center>
           </form>
         </div>
         <div class="modal-footer">
@@ -86,10 +96,13 @@ export default {
     description: "",
     price: "",
     address: "",
+    isPublish: false,
+    loading: false
   }),
   computed: mapGetters(['walletAddress', 'storiesBlockchain', 'file', 'filename']),
   methods:{
     async addStory(e){
+      this.loading = true;
       e.preventDefault();
 
       const uploadedFile = await fleekStorage.upload({
@@ -104,7 +117,8 @@ export default {
         .createStory(this.title, this.authorName, this.preview, this.description, window.web3.utils.toWei(this.price.toString(), 'Ether'))
         .send({ from: this.address });
 
-      this.$router.push('/');
+      this.isPublish = true;
+      this.loading = false;
     }
   },
   mounted(){

@@ -1,7 +1,7 @@
 <template>
   <div class="profile container mt-4">
     <h1>Profile</h1>
-
+    
     <div v-if="!accountLoading">
       <div class="d-flex align-items-center">
         <button class="btn btn-primary" @click="createIdentity()" :disabled="fileLoading">
@@ -27,7 +27,7 @@
       </div>
     </center>
 
-    <div class="d-flex justify-content-between align-items-center mt-5">
+    <div v-if="isLogin" class="d-flex justify-content-between align-items-center mt-5">
       <h2>Your files</h2>
       <label class="btn btn-outline-success">
         <span>Upload File</span>
@@ -91,7 +91,8 @@ export default {
     browserStorage: null,
     accountLoading: false,
     fileLoading: false,
-    openFileLoading: false
+    openFileLoading: false,
+    isLogin: false
   }),
   methods: {
     ...mapActions(['setCurrentFile', 'setCurrentFilename']),
@@ -127,6 +128,7 @@ export default {
 
         this.files = result.items;
         this.fileLoading = false;
+        this.isLogin = true;
       }
       catch(err){
         console.error(err);
@@ -184,15 +186,6 @@ export default {
           "toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=500,height=600"
         );
         this.openFileLoading = false;
-
-        // const uploadedFile = await fleekStorage.upload({
-        //     apiKey: fleekAPIKey,
-        //     apiSecret: fleekAPISecret,
-        //     key: path,
-        //     data: newdata
-        // });
-
-        // console.log(uploadedFile)
       }
       catch(err) {
         console.error(err);
@@ -227,6 +220,7 @@ export default {
       console.log(result.items, "result")
 
       this.files = result.items;
+      this.isLogin = true;
     },
     async openModal(path){
       this.setCurrentFilename(path);

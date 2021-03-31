@@ -6,7 +6,7 @@
       <div class="col-sm-6 col-md-3 col-lg-2" v-bind:key="token.tokenId" v-for="token of this.data">
         <div class="card mb-3">
           <div class="card-body">
-            <a v-bind:href="'https://gateway.pinata.cloud/ipfs/'+ token.tokenURI" target="_blank" rel="noopener noreferrer">Token #{{token.tokenId}}</a>
+            <a v-bind:href="'https://storageapi.fleek.co/ysongh-team-bucket/'+ token.tokenURI" target="_blank" rel="noopener noreferrer">Token #{{token.tokenId}}</a>
           </div>
         </div>
       </div>
