@@ -5,6 +5,7 @@ import Home from '../components/Home.vue'
 import CreateStory from '../components/CreateStory.vue'
 import Story from '../components/Story.vue'
 import Tokens from '../components/Tokens.vue'
+import Profile from '../components/Profile.vue'
 
 Vue.use(VueRouter)
 
@@ -28,7 +29,12 @@ Vue.use(VueRouter)
     path: '/story/:id',
     name: 'Story',
     component: Story
-  }
+  },
+  {
+    path: '/Profile',
+    name: 'Profile',
+    component: Profile
+  },
 ]
 
 const router = new VueRouter({
