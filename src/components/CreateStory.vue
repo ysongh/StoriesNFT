@@ -67,9 +67,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import  axios from "axios";
+import fleekStorage from '@fleekhq/fleek-storage-js'
 
-import { pinataApiKey, pinataSecretApiKey } from '../config';
+import { fleekAPIKey, fleekAPISecret } from '../config';
 
 export default {
   name: 'CreateStory',
@@ -88,20 +88,14 @@ export default {
     async addStory(e){
       e.preventDefault();
 
-      let data = new FormData();
-      data.append('file', this.file);
+      const uploadedFile = await fleekStorage.upload({
+          apiKey: fleekAPIKey,
+          apiSecret: fleekAPISecret,
+          key: this.file.name,
+          data: this.file
+      });
 
-      const res = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", data, {
-        maxContentLength: "Infinity",
-        headers: {
-          "Content-Type": 'multipart/form-data',
-          pinata_api_key: pinataApiKey, 
-          pinata_secret_api_key: pinataSecretApiKey,
-        }
-      })
-
-      this.description = res.data.IpfsHash;
-
+      this.description = uploadedFile.key;
       await this.storiesBlockchain.methods
         .createStory(this.title, this.authorName, this.preview, this.description, window.web3.utils.toWei(this.price.toString(), 'Ether'))
         .send({ from: this.address });

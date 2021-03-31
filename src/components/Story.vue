@@ -10,10 +10,10 @@
 
         <p class="text-muted">{{data.preview}}</p>
 
-        <button v-if="!isPurchase" class="btn btn-primary primary-bg-color" @click="buyStory()">
+        <button class="btn btn-primary primary-bg-color" @click="buyStory()">
           Buy for {{weiToETH}} ETH
         </button>
-        <a v-else v-bind:href="'https://gateway.pinata.cloud/ipfs/'+ data.description" target="_blank" rel="noopener noreferrer">
+        <a v-bind:href="'https://storageapi.fleek.co/ysongh-team-bucket/'+ data.description" target="_blank" rel="noopener noreferrer">
           Link to the Story
         </a>
       </div>
