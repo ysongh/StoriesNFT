@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@fleekhq/fleek-storage-js": "^1.0.14",
     "@spacehq/sdk": "0.0.30",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",

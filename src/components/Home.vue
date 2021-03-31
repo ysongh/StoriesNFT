@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <p>{{userToken}}</p>
+    <p>Username: {{username}}</p>
     <img :src="url" alt="image" />
     <p>{{url}}</p>
 
@@ -46,14 +46,22 @@
         </div>
       </div>
     </div>
+
+    <button @click="addPhoto()">Upload</button>
+    <img id="my-img">getshareFiles
+    <button @click="shareFile()">Share</button>
+    <button @click="getshareFiles()">GetshareFiles</button>
   </div>
    
 </template>
 
 <script>
 import { Users, BrowserStorage } from '@spacehq/users';
-import { UserStorage, AddItemsResultSummary } from "@spacehq/storage";
+import { UserStorage } from "@spacehq/storage";
 import { mapGetters, mapActions } from 'vuex';
+import fleekStorage from '@fleekhq/fleek-storage-js'
+
+import { fleekAPIKey, fleekAPISecret } from '../config';
 
 export default {
   name: 'Home',
@@ -64,7 +72,8 @@ export default {
     spaceUser: null,
     usersLen: 0,
     userList: [],
-    files: []
+    files: [],
+    username: ''
   }),
   methods: {
     ...mapActions(['connectToBlockchain']),
@@ -87,14 +96,13 @@ export default {
       let userList = await storage.list()
       console.log("storage.list(): ", await storage.list());
       this.userList = userList;
-
-      console.log(userList, "fds")
       
       const spaceUser = await users.authenticate(userList[num - 1]);
       this.spaceUser = spaceUser;
       console.log(spaceUser, "spaceUser")
 
       const spaceStorage = new UserStorage(spaceUser);
+      //this.username = spaceStorage.userMetadataStore.username;
       console.log(spaceStorage, "spaceStorage")
 
       //await spaceStorage.createFolder({ bucket: 'personal', path: '/test' });
@@ -104,58 +112,25 @@ export default {
       this.files = result.items;
     },
     async uploadFile(event){
-      const sourcePaths = Array.from(event.target.files).map((file) => ({
-        name: file.name,
-        size: file.size,
-        data: file,
-        mimeType: file.type,
-        path: file.webkitRelativePath || file.name,
-      }));
-      console.log(sourcePaths);
+      const uploadedFile = await fleekStorage.upload({
+          apiKey: fleekAPIKey,
+          apiSecret: fleekAPISecret,
+          key: event.target.files[0].name,
+          data: event.target.files[0]
+      });
 
+      console.log(uploadedFile);
       const spaceStorage = new UserStorage(this.spaceUser);
+      await spaceStorage.createFolder({ bucket: 'personal', path: uploadedFile.key });
 
-      const uploadResponse = await spaceStorage.addItems({
-        bucket: 'personal',
-        files: [
-          {
-            data: sourcePaths[0].data,
-            path: sourcePaths[0].path,
-            mimeType: sourcePaths[0].mimeType,
-          }
-        ]
-      });
-
-      console.log(uploadResponse, "uploadResponse")
-      
-      uploadResponse.once('done', async (AddItemsEventData) => {
-        const summary = AddItemsResultSummary;
-        console.log(summary, "summary", AddItemsEventData);
-
-        let result;
-
-        result = await spaceStorage.listDirectory({ bucket: 'personal', path: '/' });
-        console.log(result, "result")
-
-        const response = await spaceStorage.openFile({ bucket: 'personal', path: sourcePaths[0].path });
-        // response.stream is an async iterable
-        for await (const chunk of response.stream) {
-          // aggregate the chunks based on your logic
-          console.log(chunk, "chunk")
-        }
-
-        // response also contains a convenience function consumeStream
-        const fileBytes = await response.consumeStream();
-        console.log(fileBytes, "fileBytes")
-        const fileUrl = URL.createObjectURL(new Blob([fileBytes.buffer], { type: response.mimeType }));
-        console.log(fileUrl, "fileUrl")
-        this.url = fileUrl;
-      });
+      let result = await spaceStorage.listDirectory({ bucket: 'personal', path: '/' });
+      console.log(result.items, "new folder");
+      this.files = result.items;
     },
     async getFile(){
       const spaceStorage = new UserStorage(this.spaceUser);
 
-      const response = await spaceStorage.openFile({ bucket: 'personal', path: '/photo-1414235077428-338989a2e8c0.jpeg' });
+      const response = await spaceStorage.openFile({ bucket: 'personal', path: '/' });
       // response.stream is an async iterable
       for await (const chunk of response.stream) {
         // aggregate the chunks based on your logic
@@ -175,7 +150,13 @@ export default {
       // let src = `data:${response.mimeType};base64,` + fileBytes;
       // console.log(src)
       this.url = fileUrl;
-    }
+
+      const content = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 5, 0, 0, 0, 5, 8, 6, 0, 0, 0, 141, 111, 38, 229, 0, 0, 0, 28, 73, 68, 65, 84, 8, 215, 99, 248, 255, 255, 63, 195, 127, 6, 32, 5, 195, 32, 18, 132, 208, 49, 241, 130, 88, 205, 4, 0, 14, 245, 53, 203, 209, 142, 14, 31, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130]);
+      console.log(content, "content")
+        document.getElementById('my-img').src = URL.createObjectURL(
+          new Blob([content.buffer], { type: response.mimeType } /* (1) */)
+        );
+    },
   },
   computed: mapGetters(['walletAddress', 'storiesBlockchain', 'storiesCount', 'storiesList']),
   async mounted(){
