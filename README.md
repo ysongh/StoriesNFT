@@ -1,6 +1,9 @@
 # Stories NFT
 A dapp that allows reader to buy stories in NFT
 
+- Live Site - https://storiesnft.netlify.app/
+- Demo - https://youtu.be/LNgazG0Npjc
+
 ## Features
 - Writers can create their story
 - Files are store on Fleek Storage
