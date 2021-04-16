@@ -3,6 +3,8 @@ A dapp that allows reader to buy stories in NFT
 
 - Live Site - https://storiesnft.netlify.app/
 - Demo - https://youtu.be/LNgazG0Npjc
+- Won Second Place at Fleek's Gitcoin GR9 Hackathon
+- Blog - https://blog.fleek.co/posts/gitcoin-gr9-hackathon-fleek-winners
 
 ## Features
 - Writers can create their story
