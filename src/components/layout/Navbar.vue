@@ -23,6 +23,12 @@
                     <li class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                         <router-link class="nav-link" to="/profile">Profile</router-link>
                     </li>
+                    <li v-if="walletAddress" class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                        <button class="btn btn-primary secondary-bg-color" to="/profile">{{walletAddress.substring(0,8) + "..." + walletAddress.substring(34,42)}}</button>
+                    </li>
+                    <li v-else class="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                        <button class="btn btn-primary secondary-bg-color" @click="connectToWallet">Connect to Wallet</button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -30,8 +36,17 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
-    name: 'Navbar'
+    name: 'Navbar',
+    methods: {
+        ...mapActions(['connectToBlockchain']),
+        async connectToWallet(){
+            await this.connectToBlockchain();
+        }
+    },
+    computed: mapGetters(['walletAddress'])
 }
 </script>
 
