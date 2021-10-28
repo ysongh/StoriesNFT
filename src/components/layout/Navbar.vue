@@ -2,8 +2,8 @@
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <li class="navbar-brand" data-toggle="collapse" data-target=".navbar-collapse.show">
-                <router-link class="nav-link" to="/">
-                    Stories NFT
+                <router-link class="nav-link padding-0" to="/">
+                    <img class="logo" src="../../assets/logo.png" alt="logo" />
                 </router-link>
             </li>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,5 +51,11 @@ export default {
 </script>
 
 <style>
+    .logo {
+        width: 150px;
+    }
 
+    .padding-0 {
+        padding: 0 !important;
+    }
 </style>
