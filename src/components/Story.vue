@@ -13,7 +13,7 @@
         <button class="btn btn-primary primary-bg-color" @click="buyStory()">
           Buy for {{weiToETH}} ETH
         </button>
-        <a v-bind:href="'https://storageapi.fleek.co/ysongh-team-bucket/'+ data.description" target="_blank" rel="noopener noreferrer">
+        <a v-bind:href="'https://'+ data.description + '.ipfs.dweb.link'" target="_blank" rel="noopener noreferrer">
           Link to the Story
         </a>
       </div>

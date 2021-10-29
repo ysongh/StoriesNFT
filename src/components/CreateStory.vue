@@ -77,7 +77,7 @@ export default {
     title: "",
     authorName: "",
     preview: "",
-    description: "",
+    cid: "",
     price: "",
     address: "",
     file: null,
@@ -94,10 +94,11 @@ export default {
           key: this.file.name,
           data: this.file
       });
+      console.log(uploadedFile);
 
-      this.description = uploadedFile.key;
+      this.cid = uploadedFile.hash;
       await this.storiesBlockchain.methods
-        .createStory(this.title, this.authorName, this.preview, this.description, window.web3.utils.toWei(this.price.toString(), 'Ether'))
+        .createStory(this.title, this.authorName, this.preview, this.cid, window.web3.utils.toWei(this.price.toString(), 'Ether'))
         .send({ from: this.address });
 
       this.$router.push('/');
