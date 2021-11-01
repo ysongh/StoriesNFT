@@ -1,9 +1,10 @@
 <template>
-  <div class="home container mt-4">
+  <div class="home container">
+    <Alert></Alert>
     <ConnectMessage v-if="!storiesBlockchain"></ConnectMessage>
     
     <div v-else>
-      <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center mt-4">
         <h1>List of Stories</h1>
         <router-link class="btn btn-primary secondary-bg-color" to="/create-story">Create Story</router-link>
       </div>
@@ -34,11 +35,13 @@
 import { mapGetters, mapActions } from 'vuex';
 
 import ConnectMessage from '../components/common/ConnectMessage.vue';
+import Alert from '../components/common/Alert.vue';
 
 export default {
   name: 'Home',
   components: {
-    ConnectMessage
+    ConnectMessage,
+    Alert
   },
   methods: mapActions(['connectToBlockchain']),
   computed: mapGetters(['walletAddress', 'storiesBlockchain', 'storiesCount', 'storiesList']),
