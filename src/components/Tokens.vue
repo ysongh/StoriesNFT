@@ -1,12 +1,15 @@
 <template>
   <div class="tokens container mt-4">
-    <h1 class="mb-4">List of NFT</h1>
+    <ConnectMessage v-if="!storiesBlockchain"></ConnectMessage>
 
-    <div class="row">
-      <div class="col-sm-6 col-md-3 col-lg-2" v-bind:key="token.tokenId" v-for="token of this.data">
-        <div class="card mb-3">
-          <div class="card-body">
-            <a v-bind:href="'https://'+ token.tokenURI + '.ipfs.dweb.link'" target="_blank" rel="noopener noreferrer">Token #{{token.tokenId}}</a>
+    <div v-else>
+      <h1 class="mb-4">List of NFT</h1>
+      <div class="row">
+        <div class="col-sm-6 col-md-3 col-lg-2" v-bind:key="token.tokenId" v-for="token of this.data">
+          <div class="card mb-3">
+            <div class="card-body">
+              <a v-bind:href="'https://'+ token.tokenURI + '.ipfs.dweb.link'" target="_blank" rel="noopener noreferrer">Token #{{token.tokenId}}</a>
+            </div>
           </div>
         </div>
       </div>
@@ -17,8 +20,13 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import ConnectMessage from '../components/common/ConnectMessage.vue';
+
 export default {
   name: 'Tokens',
+  components: {
+    ConnectMessage
+  },
   data: () => ({
     data: []
   }),

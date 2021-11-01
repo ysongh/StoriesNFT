@@ -1,6 +1,7 @@
 <template>
   <div class="story container mt-4">
-    <div class="card mb-3">
+    <ConnectMessage v-if="!storiesBlockchain"></ConnectMessage>
+    <div v-else class="card mb-3">
       <div class="card-body">
         <div class="d-flex">
           <h2 class="h2 m-0">{{data.title}}</h2>
@@ -10,10 +11,10 @@
 
         <p class="text-muted">{{data.preview}}</p>
 
-        <button class="btn btn-primary primary-bg-color" @click="buyStory()">
+        <button v-if="!isPurchase" class="btn btn-primary primary-bg-color" @click="buyStory()">
           Buy for {{weiToETH}} ETH
         </button>
-        <a v-bind:href="'https://'+ data.description + '.ipfs.dweb.link'" target="_blank" rel="noopener noreferrer">
+        <a v-else v-bind:href="'https://'+ data.description + '.ipfs.dweb.link'" target="_blank" rel="noopener noreferrer">
           Link to the Story
         </a>
       </div>
@@ -24,8 +25,13 @@
 <script>
 import { mapGetters } from 'vuex';
 
+import ConnectMessage from '../components/common/ConnectMessage.vue';
+
 export default {
   name: 'Story',
+  components: {
+    ConnectMessage
+  },
   data: () => ({
     data: {},
     isPurchase: false
